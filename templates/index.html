@@ -23,6 +23,13 @@
     {% endfor %}
     {% endif %}
     {% endwith %}
+    <div class="files">
+        {% for file in files %}
+        <div>
+            {{ file }}
+        </div>
+        {% endfor %}
+    </ul>
 </body>
 
 </html>

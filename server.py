@@ -23,7 +23,7 @@ QRcode(app)
 
 @app.route("/")
 def root():
-    return render_template("index.html", ip=IP)
+    return render_template("index.html", ip=IP, files=os.listdir("files/"))
 
 
 @app.route("/upload", methods=["POST"])

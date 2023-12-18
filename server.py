@@ -4,9 +4,10 @@ Main server file. Runs a flask server which can be used to upload and download f
 """
 # pylint: disable=missing-function-docstring
 
+import os
 from socket import AF_INET
 
-from flask import Flask, redirect, render_template, request, jsonify
+from flask import Flask, redirect, render_template, request, flash
 from flask_qrcode import QRcode
 from werkzeug.serving import get_interface_ip
 from werkzeug.utils import secure_filename
@@ -16,6 +17,7 @@ PORT = 8000
 IP = f"http://{get_interface_ip(AF_INET)}:{PORT}"
 
 app = Flask(__name__)
+app.secret_key = "Some"
 QRcode(app)
 
 
@@ -24,18 +26,18 @@ def root():
     return render_template("index.html", ip=IP)
 
 
-# @app.errorhandler(404)
-# def page_not_found(error):
-    # _ = error
-    # print("had 404")
-    # return redirect("/")
-
-
 @app.route("/upload", methods=["POST"])
 def upload():
     file = request.files["file"]
-    if file:
-        file.save(f"files/{secure_filename(file.filename)}")
+    path = f"files/{secure_filename(file.filename)}"
+    if not file:
+        flash("No file provided")
+        return redirect("/")
+    if os.path.exists(os.path.join(path)):
+        flash("Filename already exists on server")
+        return redirect("/")
+    file.save(path)
+    flash(f"{file.filename} was uploaded successfully")
     return redirect("/")
 
 

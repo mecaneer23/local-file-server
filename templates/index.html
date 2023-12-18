@@ -25,11 +25,9 @@
     {% endwith %}
     <div class="files">
         {% for file in files %}
-        <div>
-            <a href="files/{{ file }}" download>{{ file }}</a>
-        </div>
+        <div><a href="files/{{ file }}" download>{{ file }}</a></div>
         {% endfor %}
-    </ul>
+    </div>
 </body>
 
 </html>

@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <p>Running on {{ ip }}</p>
+    <p>Running on <a href="{{ ip }}">{{ ip }}</a></p>
     <img src="{{ qrcode(ip) }}" />
     <form action="/upload" method="post" enctype="multipart/form-data">
         <input type="file" name="file" />
@@ -26,7 +26,7 @@
     <div class="files">
         {% for file in files %}
         <div>
-            {{ file }}
+            <a href="files/{{ file }}" download>{{ file }}</a>
         </div>
         {% endfor %}
     </ul>

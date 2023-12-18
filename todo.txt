@@ -1,5 +1,5 @@
 - display uploaded files
-- each file should have a download button
++ each file should have a download button
 - each file should have a delete button
 - make upload button work
 - add css

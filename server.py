@@ -7,13 +7,13 @@ Main server file. Runs a flask server which can be used to upload and download f
 import os
 from socket import AF_INET
 
-from flask import Flask, redirect, render_template, request, flash
+from flask import Flask, redirect, render_template, request, flash, send_from_directory
 from flask_qrcode import QRcode
 from werkzeug.serving import get_interface_ip
 from werkzeug.utils import secure_filename
 
 HOSTNAME = "0.0.0.0"
-PORT = 8000
+PORT = 80
 IP = f"http://{get_interface_ip(AF_INET)}:{PORT}"
 
 app = Flask(__name__)
@@ -24,6 +24,11 @@ QRcode(app)
 @app.route("/")
 def root():
     return render_template("index.html", ip=IP, files=os.listdir("files/"))
+
+
+@app.route('/files/<path:filename>', methods=['GET', 'POST'])
+def download(filename):
+    return send_from_directory("files", filename)
 
 
 @app.route("/upload", methods=["POST"])

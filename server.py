@@ -13,7 +13,7 @@ from werkzeug.serving import get_interface_ip
 from werkzeug.utils import secure_filename
 
 HOSTNAME = "0.0.0.0"
-PORT = 80
+PORT = 8000
 IP = f"http://{get_interface_ip(AF_INET)}:{PORT}"
 
 app = Flask(__name__)
@@ -47,4 +47,4 @@ def upload():
 
 
 if __name__ == "__main__":
-    app.run(host=HOSTNAME, port=PORT, debug=True)
+    app.run(host=HOSTNAME, port=PORT, debug=False)

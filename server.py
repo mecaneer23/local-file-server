@@ -64,4 +64,4 @@ def upload() -> Response:
 
 
 if __name__ == "__main__":
-    app.run(host=HOSTNAME, port=PORT, debug=True)
+    app.run(host=HOSTNAME, port=PORT, debug=False)

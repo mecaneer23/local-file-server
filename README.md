@@ -15,3 +15,9 @@ pip install -r requirements.txt
 ```bash
 python3 server.py
 ```
+
+## Usage
+
+1. Open this webpage on all devices.
+2. Upload file(s) using the form.
+3. Download file(s) onto other device(s) from the list.

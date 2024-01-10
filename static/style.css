@@ -10,7 +10,15 @@ body {
     margin: 10vh;
 }
 
+@media (max-width: 1250px) {
+    .container {
+        flex-direction: column;
+        margin: 0;
+    }
+}
+
 .section {
+    margin: 5vh;
     background-color: #ddd;
     padding: 2vh;
     border-radius: 1vh;

@@ -2,6 +2,13 @@
 
 This is a simple local file server, written with Flask.
 
+## Screenshots
+
+![computer screenshot](/static/computer.png)
+
+![iphone screenshot](/static/iphone1.png)
+![iphone screenshot](/static/iphone2.png)
+
 ## Installation
 
 ```bash

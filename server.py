@@ -48,13 +48,10 @@ def download(filename: str) -> Response:
 @app.route("/upload", methods=["POST"])
 def upload() -> Response:
     file = request.files["file"]
-    if file.filename is None:
-        flash("No file provided")
-        return redirect("/")
-    path = local_path.joinpath(FOLDER, secure_filename(str(file.filename)))
     if not file:
         flash("No file provided")
         return redirect("/")
+    path = local_path.joinpath(FOLDER, secure_filename(str(file.filename)))
     if path.exists():
         flash("Filename already exists on server")
         return redirect("/")

@@ -1,7 +1,6 @@
 # Todos
 
 - each file should have a delete button
-- add css
 - add instructions to index.html
 - add instructions to readme
 

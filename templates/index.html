@@ -5,32 +5,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local File Server</title>
-    <style>
-
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-    <p>Running on <a href="{{ ip }}">{{ ip }}</a></p>
-    <img src="{{ qrcode(ip) }}" />
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" />
-        <input type="submit" value="Upload">
-    </form>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <script>
-        alert("{{ message }}")
-    </script>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-    <div class="files">
-        {% for file in files %}
-        <div><a href="files/{{ file }}" download>{{ file }}</a></div>
-        {% endfor %}
+    <div class="container">
+        <div class="section">
+            <div class="box">
+                <p>Running on <a href="{{ ip }}">{{ ip }}</a></p>
+                <img src="{{ qrcode(ip) }}" />
+            </div>
+
+            <form class="box" action="/upload" method="post" enctype="multipart/form-data">
+                <label for="file-upload" class="input-button">Select File</label>
+                <input id="file-upload" type="file" name="file"/>
+                <span id="file-name"></span>
+                <label for="submit-file" class="input-button">Upload</label>
+                <input id="submit-file" type="submit" />
+            </form>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <script>
+                alert("{{ message }}")
+            </script>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+        </div>
+        <div class="section files">
+            <h2>Files:</h2>
+            {% for file in files %}
+            <div><a href="files/{{ file }}" download>{{ file }}</a></div>
+            {% endfor %}
+        </div>
+        <div class="section">
+            <h2>Instructions:</h2>
+            <p>1. Open this webpage on all devices.</p>
+            <p>2. Upload file(s) using the form below.</p>
+            <p>3. Download file(s) onto other device(s) from the list.</p>
+        </div>
     </div>
+    <script>
+        document.getElementById("file-upload").addEventListener("change", () => {
+            document.getElementById("file-name").innerHTML = document.getElementById("file-upload").files[0].name;
+        });
+    </script>
 </body>
 
 </html>

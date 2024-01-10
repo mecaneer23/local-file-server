@@ -78,6 +78,16 @@ input[type="submit"] {
     padding: 1vh;
     margin-bottom: 2vh;
     border-radius: 1vh;
+    display: flex;
+    justify-content: space-between;
+}
+
+.files div a {
+    margin: 0 2vw;
+}
+
+.delete-button:hover {
+    color: red;
 }
 
 .files a {
@@ -85,6 +95,6 @@ input[type="submit"] {
     text-decoration: none;
 }
 
-.files a:hover {
+.files .file-download:hover {
     text-decoration: underline;
 }

@@ -45,6 +45,16 @@ def download(filename: str) -> Response:
     return send_from_directory(local_path.joinpath(FOLDER), filename)
 
 
+@app.route("/delete/<path:filename>", methods=["GET"])
+def delete(filename: str) -> Response:
+    try:
+        local_path.joinpath(FOLDER, filename).unlink()
+        flash("File successfully deleted")
+    except FileNotFoundError:
+        flash("File not found, no file deleted")
+    return redirect("/")
+
+
 @app.route("/upload", methods=["POST"])
 def upload() -> Response:
     file = request.files["file"]

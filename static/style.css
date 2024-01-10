@@ -4,6 +4,10 @@ body {
     color: #333;
 }
 
+h1 {
+    text-align: center;
+}
+
 .container {
     display: flex;
     justify-content: space-around;

@@ -2,7 +2,6 @@
 """
 Main server file. Runs a flask server which can be used to upload and download files.
 """
-# pylint: disable=missing-function-docstring
 
 from pathlib import Path
 from socket import AF_INET
@@ -33,6 +32,9 @@ local_path = Path(__file__).parent
 
 @app.route("/")
 def root():
+    """
+    Entry point and home page. Render templates/index.html
+    """
     return render_template(
         "index.html",
         ip=IP,
@@ -42,11 +44,18 @@ def root():
 
 @app.route(f"/{FOLDER}/<path:filename>", methods=["GET", "POST"])
 def download(filename: str) -> Response:
+    """
+    Navigating to the a file path
+    for a valid file will download that file.
+    """
     return send_from_directory(local_path.joinpath(FOLDER), filename)
 
 
 @app.route("/delete/<path:filename>", methods=["GET"])
 def delete(filename: str) -> Response:
+    """
+    Navigating to /delete/filename will delete filename
+    """
     try:
         local_path.joinpath(FOLDER, filename).unlink()
         flash("File successfully deleted")
@@ -57,6 +66,10 @@ def delete(filename: str) -> Response:
 
 @app.route("/upload", methods=["POST"])
 def upload() -> Response:
+    """
+    Accept a POST request with a file object.
+    If it is valid, upload it to the server.
+    """
     file = request.files["file"]
     if not file:
         flash("No file provided")

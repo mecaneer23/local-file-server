@@ -19,7 +19,7 @@
 
             <form class="box" action="/upload" method="post" enctype="multipart/form-data">
                 <label for="file-upload" class="input-button">Select File</label>
-                <input id="file-upload" type="file" name="file" />
+                <input id="file-upload" type="file" name="file" multiple />
                 <span id="file-name"></span>
                 <label for="submit-file" class="input-button">Upload</label>
                 <input id="submit-file" type="submit" />
@@ -53,7 +53,9 @@
     </div>
     <script>
         document.getElementById("file-upload").addEventListener("change", () => {
-            document.getElementById("file-name").innerHTML = document.getElementById("file-upload").files[0].name;
+            document.getElementById("file-name").innerHTML = Array.from(
+                document.getElementById("file-upload").files
+            ).map(file => file.name).join(", ");
         });
     </script>
 </body>

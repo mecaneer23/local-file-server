@@ -58,7 +58,6 @@ def delete(filename: str) -> Response:
     """
     try:
         local_path.joinpath(FOLDER, filename).unlink()
-        flash("File successfully deleted")
     except FileNotFoundError:
         flash("File not found, no file deleted")
     return redirect("/")
@@ -70,16 +69,16 @@ def upload() -> Response:
     Accept a POST request with a file object.
     If it is valid, upload it to the server.
     """
-    file = request.files["file"]
-    if not file:
+    files = request.files.getlist("file")
+    if not files:
         flash("No file provided")
         return redirect("/")
-    path = local_path.joinpath(FOLDER, secure_filename(str(file.filename)))
-    if path.exists():
-        flash("Filename already exists on server")
-        return redirect("/")
-    file.save(path)  # pyright: ignore
-    flash(f"{file.filename} was uploaded successfully")
+    for file in files:
+        path = local_path.joinpath(FOLDER, secure_filename(str(file.filename)))
+        if path.exists():
+            flash("Filename already exists on server")
+            return redirect("/")
+        file.save(path)  # pyright: ignore
     return redirect("/")
 
 

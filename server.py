@@ -15,9 +15,10 @@ from flask import (
     send_from_directory,  # pyright: ignore
 )
 from flask_qrcode import QRcode
-from werkzeug.wrappers import Response
+from qrcode.main import QRCode
 from werkzeug.serving import get_interface_ip
 from werkzeug.utils import secure_filename
+from werkzeug.wrappers import Response
 
 HOSTNAME = "0.0.0.0"
 PORT = 8000
@@ -28,6 +29,14 @@ app = Flask(__name__)
 app.secret_key = "Some"
 QRcode(app)
 local_path = Path(__file__).parent
+
+
+def print_qrcode(data: str) -> None:
+    """Print a qrcode to the terminal"""
+    qr = QRCode()
+    qr.add_data(data)
+    qr.make(fit=True)
+    qr.print_ascii(invert=True)
 
 
 @app.route("/")
@@ -83,4 +92,5 @@ def upload() -> Response:
 
 
 if __name__ == "__main__":
+    print_qrcode(IP)
     app.run(host=HOSTNAME, port=PORT, debug=False)

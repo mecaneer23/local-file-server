@@ -11,12 +11,11 @@ h1 {
 .container {
     display: flex;
     justify-content: space-around;
-    margin: 10vh;
 }
 
 @media (max-width: 1250px) {
     .container {
-        flex-direction: column;
+        flex-direction: column-reverse;
         margin: 0;
     }
 }
@@ -80,9 +79,14 @@ input[type="submit"] {
 .box {
     background-color: white;
     padding: 1vh 0;
-    margin: 2vh 0;
     border-radius: 1vh;
     min-height: 6vh;
+}
+
+.input-box {
+    background-color: #ddd;
+    min-width: 30vw;
+    margin: 5vh;
 }
 
 .files div {

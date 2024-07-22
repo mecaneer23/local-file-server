@@ -28,3 +28,7 @@ python3 server.py
 1. Open this webpage on all devices.
 2. Upload file(s) using the form.
 3. Download file(s) onto other device(s) from the list.
+
+## Todo
+
+- feat: detect and use downloads folder (windows and unix) rather than dedicated `files` folder

@@ -3,6 +3,7 @@
 Main server file. Runs a flask server which can be used to upload and download files.
 """
 
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from socket import AF_INET
 
@@ -28,7 +29,7 @@ FOLDER = "files"
 app = Flask(__name__)
 app.secret_key = "Some"
 QRcode(app)
-local_path = Path(__file__).parent
+local_path = Path(__file__).parent.joinpath(FOLDER)
 
 
 def print_qrcode(data: str) -> None:
@@ -47,7 +48,7 @@ def root():
     return render_template(
         "index.html",
         ip=IP,
-        files=map(lambda path: path.name, local_path.joinpath(FOLDER).iterdir()),
+        files=map(lambda path: path.name, local_path.iterdir()),
     )
 
 
@@ -57,7 +58,7 @@ def download(filename: str) -> Response:
     Navigating to the a file path
     for a valid file will download that file.
     """
-    return send_from_directory(local_path.joinpath(FOLDER), filename)
+    return send_from_directory(local_path, filename)
 
 
 @app.route("/delete/<path:filename>", methods=["GET"])
@@ -66,7 +67,7 @@ def delete(filename: str) -> Response:
     Navigating to /delete/filename will delete filename
     """
     try:
-        local_path.joinpath(FOLDER, filename).unlink()
+        local_path.joinpath(filename).unlink()
     except FileNotFoundError:
         flash("File not found, no file deleted")
     return redirect("/")
@@ -83,7 +84,7 @@ def upload() -> Response:
         flash("No file provided")
         return redirect("/")
     for file in files:
-        path = local_path.joinpath(FOLDER, secure_filename(str(file.filename)))
+        path = local_path.joinpath(secure_filename(str(file.filename)))
         if path.exists():
             flash("Filename already exists on server")
             return redirect("/")
@@ -91,6 +92,33 @@ def upload() -> Response:
     return redirect("/")
 
 
-if __name__ == "__main__":
+def get_args() -> Namespace:
+    """Get command line arguments to local file server"""
+    parser = ArgumentParser(
+        description="Flask server to upload and download files on a local area network",
+    )
+    parser.add_argument(
+        "download_folder",
+        nargs="?",
+        default=FOLDER,
+        help=f"Folder to store and display downloads. Default is `{FOLDER}`",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    """Entry point for local file server"""
+    global local_path  # pylint: disable=global-statement
+
+    args = get_args()
+    local_path = Path(args.download_folder)
     print_qrcode(IP)
-    app.run(host=HOSTNAME, port=PORT, debug=False)
+    app.run(
+        host=HOSTNAME,
+        port=PORT,
+        debug=False,
+    )
+
+
+if __name__ == "__main__":
+    main()

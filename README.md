@@ -25,6 +25,32 @@ python3 server.py
 
 ## Usage
 
+### Web interface - recommended
+
 1. Open this webpage on all devices.
 2. Upload file(s) using the form.
 3. Download file(s) onto other device(s) from the list.
+
+### CLI - simplified examples
+
+Replace `SERVER.IP:PORT` with the ip and port provided by the server
+
+#### Download file
+
+```bash
+curl SERVER.IP:PORT/files/FILENAME -O
+```
+
+#### Upload file
+
+```bash
+curl -X POST SERVER.IP:PORT/upload -F "file=@/path/to/file"
+```
+
+#### Delete file
+
+```bash
+curl SERVER.IP:PORT/delete/FILENAME
+```
+
+Replace `FILENAME` with the file you want to delete

@@ -41,15 +41,20 @@ def print_qrcode(data: str) -> None:
 
 
 @app.route("/")
-def root():
+def root() -> str:
     """
-    Entry point and home page. Render templates/index.html
+    Entry point and home page. Render templates/index.html or
+    return list of files for CLI requests
     """
-    return render_template(
-        "index.html",
-        ip=IP,
-        files=map(lambda path: path.name, local_path.iterdir()),
-    )
+    files = map(lambda path: path.name, local_path.iterdir())
+
+    if request.accept_mimetypes.best == "text/html":
+        return render_template(
+            "index.html",
+            ip=IP,
+            files=files,
+        )
+    return "\n".join(files)
 
 
 @app.route(f"/{FOLDER}/<path:filename>", methods=["GET", "POST"])
@@ -116,7 +121,7 @@ def main() -> None:
     app.run(
         host=HOSTNAME,
         port=PORT,
-        debug=False,
+        debug=True,
     )
 
 

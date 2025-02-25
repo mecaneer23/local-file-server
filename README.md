@@ -35,6 +35,12 @@ python3 server.py
 
 Replace `SERVER.IP:PORT` with the ip and port provided by the server
 
+#### List files on the server
+
+```bash
+curl SERVER.IP:PORT
+```
+
 #### Download file
 
 ```bash

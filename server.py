@@ -88,7 +88,7 @@ def upload() -> Response:
         if path.exists():
             flash("Filename already exists on server")
             return redirect("/")
-        file.save(path)  # pyright: ignore
+        file.save(path)
     return redirect("/")
 
 

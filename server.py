@@ -48,7 +48,10 @@ def root() -> str:
     """
     files = map(lambda path: path.name, local_path.iterdir())
 
-    if request.accept_mimetypes.best == "text/html":
+    if str(request.accept_mimetypes.best).split(";", maxsplit=1)[0] in [
+        "application/signed-exchange",
+        "text/html",
+    ]:
         return render_template(
             "index.html",
             ip=IP,
@@ -121,7 +124,7 @@ def main() -> None:
     app.run(
         host=HOSTNAME,
         port=PORT,
-        debug=True,
+        debug=False,
     )
 
 

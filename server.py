@@ -4,11 +4,13 @@ Main server file. Runs a flask server which can be used to upload and download f
 """
 
 from argparse import ArgumentParser, Namespace
+from enum import Enum
 from pathlib import Path
 from socket import AF_INET
 
 from flask import (
     Flask,
+    Request,
     flash,
     redirect,
     render_template,
@@ -32,12 +34,32 @@ QRcode(app)
 local_path = Path(__file__).parent.joinpath(FOLDER)
 
 
+class RequestOrigin(Enum):
+    """Enumeration of possible request origins"""
+
+    CLI = "CLI"
+    WEB = "WEB"
+
+
 def print_qrcode(data: str) -> None:
     """Print a qrcode to the terminal"""
     qr = QRCode()
     qr.add_data(data)
     qr.make(fit=True)
     qr.print_ascii(invert=True)
+
+
+def get_likely_request_origin(request_: Request) -> RequestOrigin:
+    """Return the most likely request origin"""
+    return (
+        RequestOrigin.WEB
+        if str(request_.accept_mimetypes.best).split(";", maxsplit=1)[0]
+        in [
+            "application/signed-exchange",
+            "text/html",
+        ]
+        else RequestOrigin.CLI
+    )
 
 
 @app.route("/")
@@ -48,10 +70,7 @@ def root() -> str:
     """
     files = map(lambda path: path.name, local_path.iterdir())
 
-    if str(request.accept_mimetypes.best).split(";", maxsplit=1)[0] in [
-        "application/signed-exchange",
-        "text/html",
-    ]:
+    if get_likely_request_origin(request) == RequestOrigin.WEB:
         return render_template(
             "index.html",
             ip=IP,

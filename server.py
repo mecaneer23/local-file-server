@@ -108,22 +108,32 @@ def delete(filename: str) -> str | Response:
 
 
 @app.route("/upload", methods=["POST"])
-def upload() -> Response:
+def upload() -> str | Response:
     """
     Accept a POST request with a file object.
     If it is valid, upload it to the server.
     """
     files = request.files.getlist("file")
     if not files:
-        flash("No file provided")
-        return redirect("/")
+        error_message = "No file provided"
+        if get_likely_request_origin(request) == RequestOrigin.WEB:
+            flash(error_message)
+            return redirect("/")
+        return error_message + "\n"
     for file in files:
         path = local_path.joinpath(secure_filename(str(file.filename)))
         if path.exists():
-            flash("Filename already exists on server")
-            return redirect("/")
+            error_message = f"Filename \"{file.filename}\" already exists on server"
+            if get_likely_request_origin(request) == RequestOrigin.WEB:
+                flash(error_message)
+                return redirect("/")
+            return error_message + "\n"
         file.save(path)
-    return redirect("/")
+    return (
+        redirect("/")
+        if get_likely_request_origin(request) == RequestOrigin.WEB
+        else "\n".join(str(file.filename) for file in files) + "\n"
+    )
 
 
 def get_args() -> Namespace:

@@ -76,7 +76,7 @@ def root() -> str:
             ip=IP,
             files=files,
         )
-    return "\n".join(files)
+    return "\n".join(files) + "\n"
 
 
 @app.route(f"/{FOLDER}/<path:filename>", methods=["GET", "POST"])
@@ -89,15 +89,22 @@ def download(filename: str) -> Response:
 
 
 @app.route("/delete/<path:filename>", methods=["GET"])
-def delete(filename: str) -> Response:
+def delete(filename: str) -> str | Response:
     """
     Navigating to /delete/filename will delete filename
     """
+    cli_return = filename
     try:
         local_path.joinpath(filename).unlink()
     except FileNotFoundError:
-        flash("File not found, no file deleted")
-    return redirect("/")
+        error_message = f"File \"{filename}\" not found, no file deleted"
+        flash(error_message)
+        cli_return = error_message
+    return (
+        redirect("/")
+        if get_likely_request_origin(request) == RequestOrigin.WEB
+        else f"{cli_return}\n"
+    )
 
 
 @app.route("/upload", methods=["POST"])

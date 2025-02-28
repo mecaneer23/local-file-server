@@ -56,7 +56,13 @@ curl SERVER.IP:PORT/files/FILENAME -O
 #### Upload file
 
 ```bash
-curl -X POST SERVER.IP:PORT/upload -F "file=@/path/to/file"
+curl -F file=@/path/to/file SERVER.IP:PORT/upload/
+```
+
+or
+
+```bash
+curl -T /path/to/file SERVER.IP:PORT/upload/
 ```
 
 #### Delete file

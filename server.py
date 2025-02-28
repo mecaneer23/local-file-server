@@ -97,7 +97,7 @@ def delete(filename: str) -> str | Response:
     try:
         local_path.joinpath(filename).unlink()
     except FileNotFoundError:
-        error_message = f"File \"{filename}\" not found, no file deleted"
+        error_message = f'File "{filename}" not found, no file deleted'
         flash(error_message)
         cli_return = error_message
     return (
@@ -107,11 +107,40 @@ def delete(filename: str) -> str | Response:
     )
 
 
+@app.route("/upload", methods=["PUT"])
+@app.route("/upload/", methods=["PUT"])
+@app.route("/upload/<path:filename>", methods=["PUT"])
+def upload_put(filename: str | None = None) -> Response:
+    """
+    Accept a PUT request with a file object.
+    If it is valid, upload it to the server.
+    Handle raw binary upload (curl --upload-file/-T)
+    """
+    if not filename:
+        return Response(
+            "405: make sure the path ends with `/` and a file is provided\nNo file uploaded\n",
+            status=405,
+            mimetype="text/plain",
+        )
+    path = local_path.joinpath(secure_filename(filename))
+    if path.exists():
+        return Response(
+            f'Filename "{filename}" already exists on server\n',
+            status=409,
+            mimetype="text/plain",
+        )
+    with open(path, "wb") as file:
+        file.write(request.data)
+    return Response(filename + "\n", status=201, mimetype="text/plain")
+
+
 @app.route("/upload", methods=["POST"])
-def upload() -> str | Response:
+@app.route("/upload/", methods=["POST"])
+def upload_post() -> str | Response:
     """
     Accept a POST request with a file object.
     If it is valid, upload it to the server.
+    Handle multipart/form-data upload (curl --form/-F or web)
     """
     files = request.files.getlist("file")
     if not files:
@@ -123,7 +152,7 @@ def upload() -> str | Response:
     for file in files:
         path = local_path.joinpath(secure_filename(str(file.filename)))
         if path.exists():
-            error_message = f"Filename \"{file.filename}\" already exists on server"
+            error_message = f'Filename "{file.filename}" already exists on server'
             if get_likely_request_origin(request) == RequestOrigin.WEB:
                 flash(error_message)
                 return redirect("/")
@@ -144,7 +173,7 @@ def api() -> str:
     with open("README.md", "r", encoding="utf-8") as file:
         data = file.readlines()
     useful_data: list[str] = []
-    for line in data[data.index("### CLI - simplified examples\n"):]:
+    for line in data[data.index("### CLI - simplified examples\n") :]:
         if line.startswith("```"):
             continue
         if line.startswith("###"):

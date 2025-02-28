@@ -136,6 +136,23 @@ def upload() -> str | Response:
     )
 
 
+@app.route("/api")
+def api() -> str:
+    """API endpoint for retrieving help information"""
+    if get_likely_request_origin(request) == RequestOrigin.WEB:
+        return "CLI Help: try calling this url with a CLI tool"
+    with open("README.md", "r", encoding="utf-8") as file:
+        data = file.readlines()
+    useful_data: list[str] = []
+    for line in data[data.index("### CLI - simplified examples\n"):]:
+        if line.startswith("```"):
+            continue
+        if line.startswith("###"):
+            line = line.lstrip("# ").rstrip("\n") + ":"
+        useful_data.append(line)
+    return "".join(useful_data).replace("\n\n\n", "\n")
+
+
 def get_args() -> Namespace:
     """Get command line arguments to local file server"""
     parser = ArgumentParser(

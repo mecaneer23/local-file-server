@@ -118,7 +118,8 @@ def upload_put(filename: str | None = None) -> Response:
     """
     if not filename:
         return Response(
-            "405: make sure the path ends with `/` and a file is provided\nNo file uploaded\n",
+            "405: make sure the path ends with `/`"\
+            "and a file is provided\nNo file uploaded\n",
             status=405,
             mimetype="text/plain",
         )

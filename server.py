@@ -15,7 +15,7 @@ from flask import (
     redirect,
     render_template,
     request,
-    send_from_directory,  # pyright: ignore
+    send_from_directory,
 )
 from flask_qrcode import QRcode
 from qrcode.main import QRCode
@@ -29,7 +29,6 @@ IP = f"http://{get_interface_ip(AF_INET)}:{PORT}"
 FOLDER = "files"
 
 app = Flask(__name__)
-app.secret_key = "Some"
 QRcode(app)
 local_path = Path(__file__).parent.joinpath(FOLDER)
 
@@ -68,7 +67,7 @@ def root() -> str:
     Entry point and home page. Render templates/index.html or
     return list of files for CLI requests
     """
-    files = map(lambda path: path.name, local_path.iterdir())
+    files = (path.name for path in local_path.iterdir())
 
     if get_likely_request_origin(request) == RequestOrigin.WEB:
         return render_template(
@@ -130,7 +129,7 @@ def upload_put(filename: str | None = None) -> Response:
             status=409,
             mimetype="text/plain",
         )
-    with open(path, "wb") as file:
+    with Path(path).open("wb") as file:
         file.write(request.data)
     return Response(filename + "\n", status=201, mimetype="text/plain")
 
@@ -171,7 +170,7 @@ def api() -> str:
     """API endpoint for retrieving help information"""
     if get_likely_request_origin(request) == RequestOrigin.WEB:
         return "CLI Help: try calling this url with a CLI tool"
-    with open("README.md", "r", encoding="utf-8") as file:
+    with Path("README.md").open(encoding="utf-8") as file:
         data = file.readlines()
     useful_data: list[str] = []
     for line in data[data.index("### CLI - simplified examples\n") :]:

@@ -12,6 +12,7 @@ from flask import (
     Flask,
     Request,
     flash,
+    make_response,
     redirect,
     render_template,
     request,
@@ -62,7 +63,7 @@ def get_likely_request_origin(request_: Request) -> RequestOrigin:
 
 
 @app.route("/")
-def root() -> str:
+def root() -> Response:
     """
     Entry point and home page. Render templates/index.html or
     return list of files for CLI requests
@@ -70,12 +71,18 @@ def root() -> str:
     files = (path.name for path in local_path.iterdir())
 
     if get_likely_request_origin(request) == RequestOrigin.WEB:
-        return render_template(
-            "index.html",
-            ip=IP,
-            files=files,
+        return make_response(
+            render_template(
+                "index.html",
+                ip=IP,
+                files=files,
+            )
         )
-    return "\n".join(files) + "\n"
+    return Response(
+        "\n".join(files) + "\n",
+        status=200,
+        mimetype="text/plain",
+    )
 
 
 @app.route(f"/{FOLDER}/<path:filename>", methods=["GET", "POST"])
@@ -88,7 +95,7 @@ def download(filename: str) -> Response:
 
 
 @app.route("/delete/<path:filename>", methods=["GET"])
-def delete(filename: str) -> str | Response:
+def delete(filename: str) -> Response:
     """
     Navigating to /delete/filename will delete filename
     """
@@ -102,7 +109,11 @@ def delete(filename: str) -> str | Response:
     return (
         redirect("/")
         if get_likely_request_origin(request) == RequestOrigin.WEB
-        else f"{cli_return}\n"
+        else Response(
+            f"{cli_return}\n",
+            status=204,
+            mimetype="text/plain",
+        )
     )
 
 
@@ -117,7 +128,7 @@ def upload_put(filename: str | None = None) -> Response:
     """
     if not filename:
         return Response(
-            "405: make sure the path ends with `/`"\
+            "405: make sure the path ends with `/`"
             "and a file is provided\nNo file uploaded\n",
             status=405,
             mimetype="text/plain",
@@ -136,7 +147,7 @@ def upload_put(filename: str | None = None) -> Response:
 
 @app.route("/upload", methods=["POST"])
 @app.route("/upload/", methods=["POST"])
-def upload_post() -> str | Response:
+def upload_post() -> Response:
     """
     Accept a POST request with a file object.
     If it is valid, upload it to the server.
@@ -148,7 +159,11 @@ def upload_post() -> str | Response:
         if get_likely_request_origin(request) == RequestOrigin.WEB:
             flash(error_message)
             return redirect("/")
-        return error_message + "\n"
+        return Response(
+            error_message + "\n",
+            status=405,
+            mimetype="text/plain",
+        )
     for file in files:
         path = local_path.joinpath(secure_filename(str(file.filename)))
         if path.exists():
@@ -156,20 +171,32 @@ def upload_post() -> str | Response:
             if get_likely_request_origin(request) == RequestOrigin.WEB:
                 flash(error_message)
                 return redirect("/")
-            return error_message + "\n"
+            return Response(
+                error_message + "\n",
+                status=409,
+                mimetype="text/plain",
+            )
         file.save(path)
     return (
         redirect("/")
         if get_likely_request_origin(request) == RequestOrigin.WEB
-        else "\n".join(str(file.filename) for file in files) + "\n"
+        else Response(
+            "\n".join(str(file.filename) for file in files) + "\n",
+            status=201,
+            mimetype="text/plain",
+        )
     )
 
 
 @app.route("/api")
-def api() -> str:
+def api() -> Response:
     """API endpoint for retrieving help information"""
     if get_likely_request_origin(request) == RequestOrigin.WEB:
-        return "CLI Help: try calling this url with a CLI tool"
+        return Response(
+            "CLI Help: try calling this url with a CLI tool",
+            status=406,
+            mimetype="text/plain",
+        )
     with Path("README.md").open(encoding="utf-8") as file:
         data = file.readlines()
     useful_data: list[str] = []
@@ -179,7 +206,11 @@ def api() -> str:
         if line.startswith("###"):
             line = line.lstrip("# ").rstrip("\n") + ":"
         useful_data.append(line)
-    return "".join(useful_data).replace("\n\n\n", "\n")
+    return Response(
+        "".join(useful_data).replace("\n\n\n", "\n"),
+        status=200,
+        mimetype="text/plain",
+    )
 
 
 def get_args() -> Namespace:

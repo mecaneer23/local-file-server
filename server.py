@@ -85,7 +85,7 @@ def root() -> Response:
     )
 
 
-@app.route(f"/{FOLDER}/<path:filename>", methods=["GET", "POST"])
+@app.route(f"/{FOLDER}/<path:filename>", methods=["GET"])
 def download(filename: str) -> Response:
     """
     Navigating to the a file path

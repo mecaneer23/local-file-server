@@ -95,7 +95,7 @@ def download(filename: str) -> Response:
     return send_from_directory(local_path, filename)
 
 
-@app.route("/delete/<path:filename>", methods=["GET"])
+@app.route("/delete/<path:filename>", methods=["GET", "DELETE"])
 def delete(filename: str) -> Response:
     """
     Navigating to /delete/filename will delete filename

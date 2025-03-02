@@ -188,6 +188,23 @@ def upload_post() -> Response:
     )
 
 
+def format_markdown_section(filepath: Path, first_line: str) -> str:
+    """
+    Return a formatted and easy-to-read string
+    from a section of a markdown file
+    """
+    with filepath.open(encoding="utf-8") as file:
+        data = file.readlines()
+    useful_data: list[str] = []
+    for line in data[data.index(first_line) :]:
+        if line.startswith("```"):
+            continue
+        if line.startswith("###"):
+            line = line.lstrip("# ").rstrip("\n") + ":"
+        useful_data.append(line)
+    return "".join(useful_data).replace("\n\n\n", "\n")
+
+
 @app.route("/api")
 def api() -> Response:
     """API endpoint for retrieving help information"""
@@ -197,17 +214,8 @@ def api() -> Response:
             status=406,
             mimetype="text/plain",
         )
-    with Path("README.md").open(encoding="utf-8") as file:
-        data = file.readlines()
-    useful_data: list[str] = []
-    for line in data[data.index("### CLI - simplified examples\n") :]:
-        if line.startswith("```"):
-            continue
-        if line.startswith("###"):
-            line = line.lstrip("# ").rstrip("\n") + ":"
-        useful_data.append(line)
     return Response(
-        "".join(useful_data).replace("\n\n\n", "\n"),
+        format_markdown_section(Path("README.md"), "### CLI - simplified examples\n"),
         status=200,
         mimetype="text/plain",
     )
@@ -241,6 +249,7 @@ def main() -> None:
     args = get_args()
     local_path = Path(args.download_folder)
     print_qrcode(IP)
+    print(IP)
     app.run(
         host=HOSTNAME,
         port=PORT,

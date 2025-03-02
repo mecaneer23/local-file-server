@@ -128,6 +128,8 @@ def upload_put(filename: str | None = None) -> Response:
     Handle raw binary upload (curl --upload-file/-T)
     """
     if not filename:
+        # TODO: allow file uploading without specified filename (uploaded_file(n))
+        # There isn't a way to detect the value of -T in Flask
         return Response(
             "405: make sure the path ends with `/`"
             "and a file is provided\nNo file uploaded\n",

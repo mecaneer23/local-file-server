@@ -30,6 +30,7 @@ IP = f"http://{get_interface_ip(AF_INET)}:{PORT}"
 FOLDER = "files"
 
 app = Flask(__name__)
+app.secret_key = "secret"  # debug mode flashing breaks without a secret key
 QRcode(app)
 local_path = Path(__file__).parent.joinpath(FOLDER)
 

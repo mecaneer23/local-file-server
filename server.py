@@ -224,6 +224,13 @@ def get_args() -> Namespace:
         default=FOLDER,
         help=f"Folder to store and display downloads. Default is `{FOLDER}`",
     )
+    parser.add_argument(
+        "--debug",
+        "-d",
+        action="store_true",
+        default=False,
+        help="Boolean: enter debug mode",
+    )
     return parser.parse_args()
 
 
@@ -237,7 +244,7 @@ def main() -> None:
     app.run(
         host=HOSTNAME,
         port=PORT,
-        debug=False,
+        debug=args.debug,
     )
 
 

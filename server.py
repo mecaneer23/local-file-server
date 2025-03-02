@@ -100,18 +100,25 @@ def delete(filename: str) -> Response:
     """
     Navigating to /delete/filename will delete filename
     """
-    cli_return = filename
     try:
         local_path.joinpath(filename).unlink()
     except FileNotFoundError:
         error_message = f'File "{filename}" not found, no file deleted'
         flash(error_message)
-        cli_return = error_message
+        return (
+            redirect("/")
+            if get_likely_request_origin(request) == RequestOrigin.WEB
+            else Response(
+                f"{error_message}\n",
+                status=405,
+                mimetype="text/plain",
+            )
+        )
     return (
         redirect("/")
         if get_likely_request_origin(request) == RequestOrigin.WEB
         else Response(
-            f"{cli_return}\n",
+            f"{filename}\n",
             status=204,
             mimetype="text/plain",
         )

@@ -92,7 +92,7 @@ def download(filename: str) -> Response:
     Navigating to the a file path
     for a valid file will download that file.
     """
-    return send_from_directory(local_path, filename)
+    return send_from_directory(local_path, secure_filename(filename))
 
 
 @app.route("/delete/<path:filename>", methods=["GET", "DELETE"])

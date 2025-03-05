@@ -106,11 +106,6 @@ input[type="submit"] {
     color: red;
 }
 
-.files a {
-    color: #333;
-    text-decoration: none;
-}
-
 .files .file-download:hover {
     text-decoration: underline;
 }

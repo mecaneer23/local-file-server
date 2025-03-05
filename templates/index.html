@@ -24,14 +24,16 @@
             <h2>Instructions:</h2>
             <p>1. Open this webpage on all devices.</p>
             <p>2. Upload file(s) using the form above.</p>
-            <p>3. Download file(s) onto other device(s) from the list.</p>
+            <p>3. Download file(s) onto other device(s) from the list.
+                Click filename to view.</p>
         </div>
         <div class="section files">
             <h2>Files:</h2>
             {% for file in files %}
             <div>
-                <a href="files/{{ file }}" download class="file-download">{{ file }}</a>
-                <a href="delete/{{file}}" class="delete-button">&times;</a>
+                <a href="files/{{ file }}" target="_blank" title="View {{ file }}">{{ file }}</a>
+                <a href="files/{{ file }}" download class="file-download" title="Download {{ file }}">Download</a>
+                <a href="delete/{{file}}" class="delete-button" title="Delete {{ file }}">&times;</a>
             </div>
             {% endfor %}
         </div>

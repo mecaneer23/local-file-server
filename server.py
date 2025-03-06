@@ -24,13 +24,13 @@ from werkzeug.serving import get_interface_ip
 from werkzeug.utils import secure_filename
 from werkzeug.wrappers import Response
 
-HOSTNAME = "0.0.0.0"
+HOSTNAME = "0.0.0.0"  # socket.gethostbyname_ex(socket.gethostname())
 PORT = 8000
 IP = f"http://{get_interface_ip(AF_INET)}:{PORT}"
 FOLDER = "files"
 
 app = Flask(__name__)
-app.secret_key = "secret"  # debug mode flashing breaks without a secret key
+app.secret_key = "secret"  # noqa: S105 # debug mode flashing breaks without a secret key
 QRcode(app)
 local_path = Path(__file__).parent.joinpath(FOLDER)
 
@@ -77,7 +77,7 @@ def root() -> Response:
                 "index.html",
                 ip=IP,
                 files=files,
-            )
+            ),
         )
     return Response(
         "\n".join(files) + "\n",
@@ -135,8 +135,8 @@ def upload_put(filename: str | None = None) -> Response:
     Handle raw binary upload (curl --upload-file/-T)
     """
     if not filename:
-        # TODO: allow file uploading without specified filename (uploaded_file(n))
-        # There isn't a way to detect the value of -T in Flask
+        # There isn't a way to detect the value of -T in Flask. Potentially
+        # implement file uploading without specified filename (uploaded_file(n))
         return Response(
             "405: make sure the path ends with `/`"
             "and a file is provided\nNo file uploaded\n",
@@ -207,11 +207,12 @@ def format_markdown_section(filepath: Path, first_line: str) -> str:
         data = file.readlines()
     useful_data: list[str] = []
     for line in data[data.index(first_line) :]:
+        usable_line = line
         if line.startswith("```"):
             continue
         if line.startswith("###"):
-            line = line.lstrip("# ").rstrip("\n") + ":"
-        useful_data.append(line)
+            usable_line = line.lstrip("# ").rstrip("\n") + ":"
+        useful_data.append(usable_line)
     return "".join(useful_data).replace("\n\n\n", "\n")
 
 
@@ -254,12 +255,12 @@ def get_args() -> Namespace:
 
 def main() -> None:
     """Entry point for local file server"""
-    global local_path  # pylint: disable=global-statement
+    global local_path  # pylint: disable=global-statement  # noqa: PLW0603
 
     args = get_args()
     local_path = Path(args.download_folder)
     print_qrcode(IP)
-    print(IP)
+    print(IP)  # noqa: T201
     app.run(
         host=HOSTNAME,
         port=PORT,

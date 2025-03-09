@@ -12,11 +12,30 @@
     <h1><br />Local File Server</h1>
     <div class="container">
         <form class="box section input-box" action="/upload" method="post" enctype="multipart/form-data">
-            <label for="file-upload" class="input-button">Select File</label>
-            <input id="file-upload" type="file" name="file" multiple />
-            <span id="file-name"></span>
-            <label for="submit-file" class="input-button">Upload</label>
-            <input id="submit-file" type="submit" />
+            <div class="form-section radio-section">
+                <p>Choose behavior for duplicate files</p>
+                <div>
+                    <input id="fail-button" type="radio" name="type" value="fail" class="radio-button" checked>
+                    <label class="radio-item" for="fail-button">Reject duplicate</label>
+                    <br>
+                    <input id="replace-button" type="radio" name="type" value="replace" class="radio-button">
+                    <label class="radio-item" for="replace-button">Replace existing file</label>
+                    <br>
+                    <input id="skip-button" type="radio" name="type" value="skip" class="radio-button">
+                    <label class="radio-item" for="skip-button">Skip upload</label>
+                    <br>
+                    <input id="keep-button" type="radio" name="type" value="keep" class="radio-button">
+                    <label class="radio-item" for="keep-button">Keep both (rename new file)</label>
+                </div>
+            </div>
+            <br>
+            <div class="form-section">
+                <label for="file-upload" class="input-button">Select File</label>
+                <input id="file-upload" type="file" name="file" multiple />
+                <span id="file-name"></span>
+                <label for="submit-file" class="input-button">Upload</label>
+                <input id="submit-file" type="submit" />
+            </div>
         </form>
     </div>
     <div class="container">

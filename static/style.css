@@ -54,8 +54,21 @@ p {
 
 form {
     display: flex;
+    flex-direction: column;
+}
+
+.form-section {
+    display: flex;
     justify-content: space-around;
     align-items: center;
+}
+
+.radio-section {
+    flex-direction: column;
+}
+
+.radio-section > * {
+    text-align: initial;
 }
 
 input[type="file"],

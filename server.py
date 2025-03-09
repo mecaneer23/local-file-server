@@ -6,6 +6,7 @@ Main server file. Runs a flask server which can be used to upload and download f
 from argparse import ArgumentParser, Namespace
 from enum import Enum
 from pathlib import Path
+from re import search
 from socket import AF_INET
 
 from flask import (
@@ -155,6 +156,28 @@ def upload_put(filename: str | None = None) -> Response:
     return Response(filename + "\n", status=201, mimetype="text/plain")
 
 
+def upload_duplicate_fail(filename: str | None) -> Response:
+    """Handle `fail` option when duplicate file upload is attempted"""
+    error_message = f"Filename `{filename}` already exists on server"
+    if get_likely_request_origin(request) == RequestOrigin.WEB:
+        flash(error_message)
+        return redirect("/")
+    return Response(
+        error_message + "\n",
+        status=409,
+        mimetype="text/plain",
+    )
+
+
+def increment_number(path: Path) -> Path:
+    """Append a `_number` to the end of a Path"""
+    suffix = path.suffix
+    stem = path.stem
+
+    stem = f"{stem[:-1]}{int(stem[-1]) + 1}" if search(r"_\d$", stem) else f"{stem}_1"
+    return path.parent / Path(stem + suffix)
+
+
 @app.route("/upload", methods=["POST"])
 @app.route("/upload/", methods=["POST"])
 def upload_post() -> Response:
@@ -174,18 +197,19 @@ def upload_post() -> Response:
             status=405,
             mimetype="text/plain",
         )
+    behavior = request.form["duplicate-file-behavior"]
     for file in files:
         path = local_path.joinpath(secure_filename(str(file.filename)))
+        if behavior == "keep":
+            while path.exists():
+                path = increment_number(path)
+            file.save(path)
+            continue
         if path.exists():
-            error_message = f'Filename "{file.filename}" already exists on server'
-            if get_likely_request_origin(request) == RequestOrigin.WEB:
-                flash(error_message)
-                return redirect("/")
-            return Response(
-                error_message + "\n",
-                status=409,
-                mimetype="text/plain",
-            )
+            if behavior == "fail":
+                return upload_duplicate_fail(file.filename)
+            if behavior == "skip":
+                continue
         file.save(path)
     return (
         redirect("/")

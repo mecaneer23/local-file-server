@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Main server file. Runs a flask server which can be used to upload and download files.
+Main server file. Runs a flask server which can be used to
+upload and download files.
 """
 
 from argparse import ArgumentParser, Namespace
@@ -174,7 +175,11 @@ def increment_number(path: Path) -> Path:
     suffix = path.suffix
     stem = path.stem
 
-    stem = f"{stem[:-1]}{int(stem[-1]) + 1}" if search(r"_\d$", stem) else f"{stem}_1"
+    stem = (
+        f"{stem[:-1]}{int(stem[-1]) + 1}"
+        if search(r"_\d$", stem)
+        else f"{stem}_1"
+    )
     return path.parent / Path(stem + suffix)
 
 
@@ -250,7 +255,10 @@ def api() -> Response:
             mimetype="text/plain",
         )
     return Response(
-        format_markdown_section(Path("README.md"), "### CLI - simplified examples\n"),
+        format_markdown_section(
+            Path("README.md"),
+            "### CLI - simplified examples\n",
+        ),
         status=200,
         mimetype="text/plain",
     )
@@ -259,7 +267,8 @@ def api() -> Response:
 def get_args() -> Namespace:
     """Get command line arguments to local file server"""
     parser = ArgumentParser(
-        description="Flask server to upload and download files on a local area network",
+        description="Flask server to upload and download "
+        "files on a local area network",
     )
     parser.add_argument(
         "download_folder",

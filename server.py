@@ -26,7 +26,7 @@ from werkzeug.serving import get_interface_ip
 from werkzeug.utils import secure_filename
 from werkzeug.wrappers import Response
 
-HOSTNAME = "0.0.0.0"  # socket.gethostbyname_ex(socket.gethostname())
+HOSTNAME = "0.0.0.0"  # noqa: S104
 PORT = 8000
 IP = f"http://{get_interface_ip(AF_INET)}:{PORT}"
 FOLDER = "files"

@@ -48,9 +48,9 @@
         </div>
         <div class="section files">
             <h2>Files:</h2>
-            {% for file in files %}
+            {% for file, filename in files %}
             <div>
-                <a href="files/{{ file }}" target="_blank" title="View {{ file }}">{{ file }}</a>
+                <a href="files/{{ file }}" target="_blank" title="View {{ file }}">{{ filename }}</a>
                 <a href="files/{{ file }}" download class="file-download" title="Download {{ file }}">Download</a>
                 <a href="delete/{{file}}" class="delete-button" title="Delete {{ file }}">&times;</a>
             </div>

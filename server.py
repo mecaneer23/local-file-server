@@ -65,13 +65,33 @@ def get_likely_request_origin(request_: Request) -> RequestOrigin:
     )
 
 
+def format_filename(
+    filename: str,
+    start_chars: int = 4,
+    end_chars: int = 4,
+    ellipsis: str = "...",
+) -> str:
+    """
+    Format a long filename to a shorter fixed width
+    """
+    if not filename or len(filename) <= start_chars + len(ellipsis) + end_chars:
+        return filename
+
+    start = filename[:start_chars]
+    end = filename[-end_chars:] if end_chars > 0 else ""
+
+    return f"{start}{ellipsis}{end}"
+
+
 @app.route("/")
 def root() -> Response:
     """
     Entry point and home page. Render templates/index.html or
     return list of files for CLI requests
     """
-    files = (path.name for path in local_path.iterdir())
+    files = (
+        (path.name, format_filename(path.name)) for path in local_path.iterdir()
+    )
 
     if get_likely_request_origin(request) == RequestOrigin.WEB:
         return make_response(
@@ -82,7 +102,7 @@ def root() -> Response:
             ),
         )
     return Response(
-        "\n".join(files) + "\n",
+        "\n".join(file[0] for file in files) + "\n",
         status=200,
         mimetype="text/plain",
     )
